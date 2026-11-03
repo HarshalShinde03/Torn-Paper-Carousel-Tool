@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>11-Slide Instagram Torn Paper Carousel Tool</title>
+  <!-- Google Fonts matching viral Instagram tall condensed & handwritten styles -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@700&family=Bebas+Neue&family=Oswald:wght@500;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #080a0f;
+      color: #f3f4f6;
+      -webkit-touch-callout: default;
+    }
+    .slide-img-wrapper {
+      aspect-ratio: 4 / 5;
+      width: 100%;
+      background: #12151e;
+      border-radius: 0.75rem;
+      overflow: hidden;
+      box-shadow: 0 14px 35px rgba(0, 0, 0, 0.6);
+      position: relative;
+    }
+    /* Real <img> tag so mobile users can Long-Press -> Save Image natively */
+    .render-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      user-select: auto;
+      -webkit-user-drag: auto;
+      -webkit-touch-callout: default;
+    }
+    input[type="range"] {
+      accent-color: #e11d48;
+    }
+  </style>
+</head>
+<body class="min-h-screen pb-24">
+
+  <!-- Top Studio Controls -->
+  <header class="max-w-7xl mx-auto px-4 pt-5 pb-3">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 md:p-6 shadow-2xl">
+      
+      <!-- Step 1 Callout Banner for Mobile Users -->
+      <div class="bg-gradient-to-r from-blue-950/80 via-indigo-950/80 to-slate-900 border border-blue-500/40 rounded-xl p-4 mb-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div class="flex items-start gap-3.5">
+          <div class="w-10 h-10 rounded-xl bg-blue-600/20 border border-blue-500/40 flex items-center justify-center text-blue-400 shrink-0 mt-0.5">
+            <i class="fa-solid fa-mobile-screen-button text-lg"></i>
+          </div>
+          <div>
+            <h2 class="text-sm md:text-base font-extrabold text-white">
+              How to Save Images on Mobile / In-App Preview:
+            </h2>
+            <p class="text-xs text-slate-300 mt-0.5 leading-relaxed">
+              1. Tap <span class="text-blue-400 font-bold">"Select Bike Photo"</span> to load your photo from your gallery.<br>
+              2. <span class="text-emerald-400 font-bold">Touch & Hold (Long-Press) directly on any slide image below</span> and tap <span class="underline">"Download Image" / "Save to Photos"</span>, OR tap the <span class="text-rose-400 font-bold">Save / Share</span> button!
+            </p>
+          </div>
+        </div>
+
+        <label for="file-upload" class="cursor-pointer shrink-0 w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-extrabold text-sm px-5 py-3.5 rounded-xl shadow-lg shadow-blue-600/30 transition">
+          <i class="fa-solid fa-images text-base"></i>
+          <span>Select Bike Photo</span>
+        </label>
+        <input id="file-upload" type="file" accept="image/*" class="hidden">
+      </div>
+
+      <!-- Title & Batch Action Row -->
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-slate-800 pb-4">
+        <div>
+          <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-rose-500/10 border border-rose-500/30 text-rose-400 text-[11px] font-bold uppercase tracking-wider mb-1.5">
+            1080 × 1350 PX (4:5 Instagram Portrait) • No Counter Badges
+          </div>
+          <h1 class="text-xl md:text-2xl font-extrabold text-white tracking-tight">
+            11-Slide Torn Paper Reveal Carousel (2% → 100%)
+          </h1>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2.5">
+          <button onclick="downloadAllSlides()" class="inline-flex items-center gap-2 bg-rose-600 hover:bg-rose-500 active:bg-rose-700 text-white font-bold text-xs md:text-sm px-4 py-2.5 rounded-xl shadow-lg shadow-rose-600/25 transition">
+            <i class="fa-solid fa-download"></i>
+            <span>Download All 11 Slides</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Customization Sliders & Text Inputs -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
+        
+        <!-- Control 1: Slide 1 Hook Text & Arrow -->
+        <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-3.5">
+          <div class="flex items-center justify-between mb-2">
+            <label class="text-xs font-bold uppercase tracking-wider text-slate-400">Slide 1 Text & Arrow</label>
+            <div class="flex items-center gap-3">
+              <label class="inline-flex items-center gap-1 text-xs text-slate-300 cursor-pointer">
+                <input type="checkbox" id="toggle-hook" checked class="rounded accent-rose-600" onchange="renderAllSlides()">
+                <span>Text</span>
+              </label>
+              <label class="inline-flex items-center gap-1 text-xs text-slate-300 cursor-pointer">
+                <input type="checkbox" id="toggle-arrow" checked class="rounded accent-rose-600" onchange="renderAllSlides()">
+                <span>Arrow ⬇</span>
+              </label>
+            </div>
+          </div>
+          <input type="text" id="hook-line1" value="HOLD THE DOTS" oninput="renderAllSlides()"
+            class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs font-bold text-white mb-2 focus:outline-none focus:border-rose-500"
+            placeholder="Line 1 (HOLD THE DOTS)">
+          <input type="text" id="hook-line2" value="AND SCROLL RIGHT" oninput="renderAllSlides()"
+            class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs font-bold text-white focus:outline-none focus:border-rose-500"
+            placeholder="Line 2 (AND SCROLL RIGHT)">
+        </div>
+
+        <!-- Control 2: Font Style & Vertical Placement -->
+        <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-3.5">
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Slide 1 Typography</label>
+          <select id="hook-font" onchange="renderAllSlides()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-white mb-2.5 focus:outline-none focus:border-rose-500">
+            <option value="Oswald" selected>Tall Condensed + Spaced Subtext (Viral Style)</option>
+            <option value="Amatic SC">Handwritten Tall Marker (Amatic SC)</option>
+            <option value="Bebas Neue">Bold Poster Impact (Bebas Neue)</option>
+          </select>
+          <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
+            <span>Text & Arrow Y-Position</span>
+            <span id="text-pos-val" class="text-slate-200 font-semibold">76%</span>
+          </div>
+          <input type="range" id="text-pos-slider" min="64" max="86" value="76" oninput="updateLabels(); renderAllSlides()" class="w-full h-1.5 bg-slate-800 rounded-lg cursor-pointer">
+        </div>
+
+        <!-- Control 3: 2% Tear Position & Photo Framing -->
+        <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-3.5">
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Bike & Tear Center Focus</label>
+          <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
+            <span>2% Initial Tear Y-Position</span>
+            <span id="tear-focus-val" class="text-slate-200 font-semibold">52%</span>
+          </div>
+          <input type="range" id="tear-focus-slider" min="25" max="75" value="52" oninput="updateLabels(); renderAllSlides()" class="w-full h-1.5 bg-slate-800 rounded-lg cursor-pointer mb-2.5">
+
+          <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
+            <span>Photo Vertical Framing</span>
+            <span id="photo-pan-val" class="text-slate-200 font-semibold">55%</span>
+          </div>
+          <input type="range" id="photo-pan-slider" min="0" max="100" value="55" oninput="updateLabels(); renderAllSlides()" class="w-full h-1.5 bg-slate-800 rounded-lg cursor-pointer">
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- Non-blocking Toast Notification -->
+  <div id="status-toast" class="hidden fixed bottom-5 right-5 z-50 bg-emerald-600 text-white px-4 py-3 rounded-xl shadow-2xl font-bold text-xs md:text-sm flex items-center gap-2.5 border border-emerald-400/30">
+    <i class="fa-solid fa-circle-check text-base"></i>
+    <span id="status-toast-text">Ready!</span>
+  </div>
+
+  <!-- Full-Screen Image Saver Modal (Fallback for strict mobile webviews) -->
+  <div id="fullscreen-modal" class="hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex flex-col items-center justify-between p-4 overflow-y-auto">
+    <div class="w-full max-w-lg flex items-center justify-between bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 mb-3">
+      <div class="flex items-center gap-2.5">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+        <p class="text-xs md:text-sm font-bold text-white" id="modal-title">
+          Touch & Hold Image Below → "Download / Save Image"
+        </p>
+      </div>
+      <button onclick="closeFullscreenModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-lg text-xs font-bold">
+        <i class="fa-solid fa-xmark mr-1"></i> Close
+      </button>
+    </div>
+
+    <div class="flex-1 flex items-center justify-center w-full max-w-md my-auto">
+      <img id="modal-img" src="" alt="Full Resolution Slide" class="max-h-[75vh] w-auto rounded-lg shadow-2xl border border-slate-800">
+    </div>
+
+    <div class="w-full max-w-lg flex items-center justify-center gap-3 mt-3">
+      <button id="modal-share-btn" class="flex-1 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs md:text-sm py-3 px-4 rounded-xl flex items-center justify-center gap-2">
+        <i class="fa-solid fa-share-nodes"></i> Share / Save to Phone
+      </button>
+      <button onclick="closeFullscreenModal()" class="bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs md:text-sm py-3 px-5 rounded-xl">
+        Done
+      </button>
+    </div>
+  </div>
+
+  <!-- 11 Slides Output Grid -->
+  <main class="max-w-7xl mx-auto px-4 mt-3">
+    <div id="slides-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <!-- Populated dynamically -->
+    </div>
+  </main>
+
+  <script>
+    // Exact 11 stages requested: 2%, 10%, 20%, 30%, 40%, 50%, 60%, 70%, 80%, 90%, 100%
+    const REVEAL_STAGES = [2, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+    const CW = 1080; // Standard 4:5 Instagram Portrait Width
+    const CH = 1350; // Standard 4:5 Instagram Portrait Height
+
+    let userPhoto = null;
+    let cachedPaperCanvas = null;
+    // Store dataURLs & Blobs for each of the 11 slides so downloading/sharing is instantaneous
+    const slideDataStore = {};
+
+    function seededRandom(seed) {
+      const x = Math.sin(seed * 12.9898 + 78.233) * 43758.5453;
+      return x - Math.floor(x);
+    }
+
+    function updateLabels() {
+      document.getElementById('text-pos-val').textContent = document.getElementById('text-pos-slider').value + '%';
+      document.getElementById('tear-focus-val').textContent = document.getElementById('tear-focus-slider').value + '%';
+      document.getElementById('photo-pan-val').textContent = document.getElementById('photo-pan-slider').value + '%';
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('status-toast');
+      document.getElementById('status-toast-text').textContent = msg;
+      toast.classList.remove('hidden');
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 3500);
+    }
+
+    // Generate high-definition 1080x1350 crumpled white paper texture offscreen (never taints CORS)
+    function getPaperTextureCanvas() {
+      if (cachedPaperCanvas) return cachedPaperCanvas;
+
+      const pCanvas = document.createElement('canvas');
+      pCanvas.width = CW;
+      pCanvas.height = CH;
+      const pCtx = pCanvas.getContext('2d');
+
+      // Base warm white paper tone
+      pCtx.fillStyle = '#f4f3ef';
+      pCtx.fillRect(0, 0, CW, CH);
+
+      // Multi-angle crumpled paper facets
+      for (let i = 0; i < 125; i++) {
+        const cx = seededRandom(i * 3 + 1) * CW;
+        const cy = seededRandom(i * 3 + 2) * CH;
+        const radius = 110 + seededRandom(i * 3 + 3) * 350;
+        const angle = seededRandom(i * 7) * Math.PI * 2;
+
+        const x1 = cx + Math.cos(angle) * radius;
+        const y1 = cy + Math.sin(angle) * radius;
+        const x2 = cx - Math.cos(angle) * radius;
+        const y2 = cy - Math.sin(angle) * radius;
+
+        const grad = pCtx.createLinearGradient(x1, y1, x2, y2);
+        const shadowAlpha = 0.045 + seededRandom(i * 11) * 0.085;
+        const lightAlpha = 0.18 + seededRandom(i * 13) * 0.28;
+
+        grad.addColorStop(0, `rgba(255, 255, 255, ${lightAlpha})`);
+        grad.addColorStop(0.47, 'rgba(242, 240, 235, 0.02)');
+        grad.addColorStop(0.5, `rgba(160, 157, 150, ${shadowAlpha})`);
+        grad.addColorStop(0.54, 'rgba(235, 233, 228, 0.04)');
+        grad.addColorStop(1, 'rgba(255, 255, 255, 0.12)');
+
+        pCtx.fillStyle = grad;
+        pCtx.beginPath();
+        const sides = 5 + Math.floor(seededRandom(i * 19) * 4);
+        for (let s = 0; s < sides; s++) {
+          const a = (s / sides) * Math.PI * 2 + seededRandom(i * 23 + s) * 0.5;
+          const r = radius * (0.55 + seededRandom(i * 29 + s) * 0.55);
+          const px = cx + Math.cos(a) * r;
+          const py = cy + Math.sin(a) * r;
+          if (s === 0) pCtx.moveTo(px, py);
+          else pCtx.lineTo(px, py);
+        }
+        pCtx.closePath();
+        pCtx.fill();
+      }
+
+      // Fine paper crease ridges
+      for (let j = 0; j < 95; j++) {
+        const sx = seededRandom(j * 31) * CW;
+        const sy = seededRandom(j * 37) * CH;
+        const len = 55 + seededRandom(j * 41) * 230;
+        const ang = seededRandom(j * 43) * Math.PI * 2;
+        const ex = sx + Math.cos(ang) * len;
+        const ey = sy + Math.sin(ang) * len;
+
+        pCtx.strokeStyle = j % 2 === 0 ? 'rgba(145, 142, 136, 0.15)' : 'rgba(255, 255, 255, 0.5)';
+        pCtx.lineWidth = 1 + seededRandom(j * 47) * 1.8;
+        pCtx.beginPath();
+        pCtx.moveTo(sx, sy);
+        pCtx.lineTo((sx + ex) / 2 + (seededRandom(j * 53) - 0.5) * 24, (sy + ey) / 2 + (seededRandom(j * 59) - 0.5) * 24);
+        pCtx.lineTo(ex, ey);
+        pCtx.stroke();
+      }
+
+      cachedPaperCanvas = pCanvas;
+      return pCanvas;
+    }
+
+    // Generate organic jagged tear line across 1080px width
+    function generateJaggedTear(baseY, seedOffset, roughness) {
+      const points = [];
+      const segments = 125;
+      for (let i = 0; i <= segments; i++) {
+        const x = (i / segments) * CW;
+        const wave1 = Math.sin(i * 0.17 + seedOffset) * (roughness * 0.45);
+        const wave2 = (seededRandom(seedOffset * 100 + i * 3.7) - 0.5) * roughness;
+        const micro = (seededRandom(seedOffset * 200 + i * 11.3) - 0.5) * (roughness * 0.45);
+        points.push({
+          x,
+          y: baseY + wave1 + wave2 + micro
+        });
+      }
+      return points;
+    }
+
+    // Fallback illustrated Honda CB350RS / roadster scene before user selects their own photo
+    function drawFallbackBikeScene(ctx) {
+      // Tropical palm / misty sky background
+      const skyGrad = ctx.createLinearGradient(0, 0, 0, CH * 0.62);
+      skyGrad.addColorStop(0, '#cbd5e1');
+      skyGrad.addColorStop(0.55, '#94a3b8');
+      skyGrad.addColorStop(1, '#475569');
+      ctx.fillStyle = skyGrad;
+      ctx.fillRect(0, 0, CW, CH);
+
+      // Lush green foliage backdrop
+      ctx.fillStyle = '#14532d';
+      ctx.beginPath();
+      ctx.moveTo(0, CH * 0.56);
+      ctx.quadraticCurveTo(CW * 0.3, CH * 0.44, CW * 0.6, CH * 0.52);
+      ctx.quadraticCurveTo(CW * 0.85, CH * 0.45, CW, CH * 0.50);
+      ctx.lineTo(CW, CH);
+      ctx.lineTo(0, CH);
+      ctx.closePath();
+      ctx.fill();
+
+      // Road surface
+      const roadGrad = ctx.createLinearGradient(0, CH * 0.55, 0, CH);
+      roadGrad.addColorStop(0, '#57534e');
+      roadGrad.addColorStop(1, '#292524');
+      ctx.fillStyle = roadGrad;
+      ctx.fillRect(0, CH * 0.55, CW, CH * 0.45);
+
+      // Detailed Roadster Bike Silhouette in center
+      ctx.save();
+      ctx.translate(CW * 0.54, CH * 0.63);
+
+      // Front & Rear Tires
+      ctx.strokeStyle = '#090a0f';
+      ctx.lineWidth = 38;
+      ctx.beginPath();
+      ctx.arc(-215, 70, 108, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(195, 115, 122, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Engine Block & Side Cover
+      ctx.fillStyle = '#18181b';
+      ctx.beginPath();
+      ctx.roundRect(-115, -25, 230, 135, 22);
+      ctx.fill();
+
+      // Crimson Red Fuel Tank
+      ctx.fillStyle = '#6b141a';
+      ctx.beginPath();
+      ctx.moveTo(-150, -35);
+      ctx.quadraticCurveTo(-65, -125, 40, -35);
+      ctx.closePath();
+      ctx.fill();
+
+      // Tuck-and-roll Black Saddle + Red Tail Light
+      ctx.fillStyle = '#1f2937';
+      ctx.beginPath();
+      ctx.roundRect(15, -48, 200, 52, 16);
+      ctx.fill();
+      ctx.fillStyle = '#ef4444';
+      ctx.beginPath();
+      ctx.roundRect(202, -32, 22, 16, 6);
+      ctx.fill();
+
+      // Handlebars & Round Mirror
+      ctx.strokeStyle = '#e4e4e7';
+      ctx.lineWidth = 10;
+      ctx.beginPath();
+      ctx.moveTo(-130, -45);
+      ctx.lineTo(-165, -165);
+      ctx.stroke();
+      ctx.fillStyle = '#f4f4f5';
+      ctx.beginPath();
+      ctx.arc(-170, -180, 22, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore();
+    }
+
+    function drawUnderlyingPhoto(ctx) {
+      if (!userPhoto) {
+        drawFallbackBikeScene(ctx);
+        return;
+      }
+
+      const panPct = parseInt(document.getElementById('photo-pan-slider').value, 10) / 100;
+      const imgRatio = userPhoto.naturalWidth / userPhoto.naturalHeight;
+      const canvasRatio = CW / CH;
+
+      let drawW, drawH, offsetX, offsetY;
+      if (imgRatio > canvasRatio) {
+        drawH = CH;
+        drawW = CH * imgRatio;
+        offsetX = (CW - drawW) * 0.5;
+        offsetY = 0;
+      } else {
+        drawW = CW;
+        drawH = CW / imgRatio;
+        offsetX = 0;
+        offsetY = (CH - drawH) * panPct;
+      }
+
+      ctx.drawImage(userPhoto, offsetX, offsetY, drawW, drawH);
+    }
+
+    // Draw "HOLD THE DOTS / AND SCROLL RIGHT" + Bold Downward Arrow on Slide 1
+    function drawSlide1HookAndArrow(ctx) {
+      const showHook = document.getElementById('toggle-hook').checked;
+      const showArrow = document.getElementById('toggle-arrow').checked;
+
+      const line1 = (document.getElementById('hook-line1').value || '').trim();
+      const line2 = (document.getElementById('hook-line2').value || '').trim();
+      const selectedFont = document.getElementById('hook-font').value;
+      const textPosPct = parseInt(document.getElementById('text-pos-slider').value, 10) / 100;
+
+      const centerY = CH * textPosPct;
+
+      ctx.save();
+      ctx.fillStyle = '#121212';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      if (showHook) {
+        if (selectedFont === 'Oswald') {
+          // Tall condensed upper line + wide-tracked bold sub-line (exact match to reference screenshot)
+          ctx.save();
+          ctx.translate(CW / 2, centerY - 62);
+          ctx.scale(0.80, 1.38);
+          ctx.font = '500 82px "Oswald", sans-serif';
+          ctx.letterSpacing = '4px';
+          ctx.fillText(line1, 0, 0);
+          ctx.restore();
+
+          ctx.font = '700 42px "Oswald", sans-serif';
+          ctx.letterSpacing = '6px';
+          ctx.fillText(line2, CW / 2, centerY + 38);
+        } else if (selectedFont === 'Amatic SC') {
+          ctx.font = '700 98px "Amatic SC", sans-serif';
+          ctx.letterSpacing = '4px';
+          ctx.fillText(line1, CW / 2, centerY - 56);
+          ctx.fillText(line2, CW / 2, centerY + 36);
+        } else {
+          ctx.font = '400 90px "Bebas Neue", sans-serif';
+          ctx.letterSpacing = '5px';
+          ctx.fillText(line1, CW / 2, centerY - 54);
+          ctx.font = '400 54px "Bebas Neue", sans-serif';
+          ctx.letterSpacing = '6px';
+          ctx.fillText(line2, CW / 2, centerY + 34);
+        }
+      }
+
+      if (showArrow) {
+        const arrowTopY = showHook ? centerY + 95 : centerY;
+        const shaftWidth = 30;
+        const shaftHeight = 58;
+        const headWidth = 80;
+        const headHeight = 50;
+
+        ctx.fillStyle = '#0d0d0d';
+        ctx.beginPath();
+        ctx.moveTo(CW / 2 - shaftWidth / 2, arrowTopY);
+        ctx.lineTo(CW / 2 + shaftWidth / 2, arrowTopY);
+        ctx.lineTo(CW / 2 + shaftWidth / 2, arrowTopY + shaftHeight);
+        ctx.lineTo(CW / 2 + headWidth / 2, arrowTopY + shaftHeight);
+        ctx.lineTo(CW / 2, arrowTopY + shaftHeight + headHeight);
+        ctx.lineTo(CW / 2 - headWidth / 2, arrowTopY + shaftHeight);
+        ctx.lineTo(CW / 2 - shaftWidth / 2, arrowTopY + shaftHeight);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      ctx.restore();
+    }
+
+    // Build all 11 slides on an offscreen canvas and write directly into visible <img> elements
+    function renderAllSlides() {
+      const grid = document.getElementById('slides-grid');
+      const paperCanvas = getPaperTextureCanvas();
+      const focusPct = parseInt(document.getElementById('tear-focus-slider').value, 10) / 100;
+      const focusY = CH * focusPct;
+
+      if (grid.children.length === 0) {
+        REVEAL_STAGES.forEach((pct, idx) => {
+          const slideNum = idx + 1;
+          const card = document.createElement('div');
+          card.className = 'bg-slate-900 border border-slate-800 rounded-2xl p-3.5 flex flex-col gap-3 shadow-xl';
+          card.innerHTML = `
+            <div class="flex items-center justify-between px-1">
+              <span class="text-xs font-extrabold uppercase tracking-wider text-slate-300">
+                Slide ${slideNum} of 11
+              </span>
+              <span class="px-2.5 py-0.5 rounded-md text-xs font-bold ${pct === 100 ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-rose-500/15 text-rose-300 border border-rose-500/30'}">
+                ${pct}% Reveal
+              </span>
+            </div>
+
+            <div class="slide-img-wrapper group cursor-pointer" onclick="openFullscreenModal(${slideNum}, ${pct})" title="Tap to view full screen or Long-Press to Save Image">
+              <img id="slide-img-${slideNum}" class="render-img" alt="Slide ${slideNum} (${pct}%)">
+              <div class="absolute bottom-2 left-2 right-2 bg-black/75 backdrop-blur-sm text-white text-[11px] font-semibold px-2.5 py-1.5 rounded-lg flex items-center justify-between pointer-events-none">
+                <span><i class="fa-solid fa-hand-pointer text-emerald-400 mr-1"></i> Hold image to Save</span>
+                <span class="text-slate-300"><i class="fa-solid fa-expand mr-1"></i> Fullscreen</span>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+              <button onclick="saveOrShareSlide(${slideNum}, ${pct})"
+                class="py-2.5 px-3 rounded-xl bg-rose-600 hover:bg-rose-500 active:bg-rose-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow transition">
+                <i class="fa-solid fa-download"></i>
+                <span>Save / Share</span>
+              </button>
+              <button onclick="openFullscreenModal(${slideNum}, ${pct})"
+                class="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs flex items-center justify-center gap-1.5 border border-slate-700 transition">
+                <i class="fa-solid fa-up-right-and-down-left-from-center"></i>
+                <span>Open Full Image</span>
+              </button>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+      }
+
+      // Reusable offscreen 1080x1350 work canvas
+      const workCanvas = document.createElement('canvas');
+      workCanvas.width = CW;
+      workCanvas.height = CH;
+      const ctx = workCanvas.getContext('2d');
+
+      REVEAL_STAGES.forEach((pct, idx) => {
+        const slideNum = idx + 1;
+        ctx.clearRect(0, 0, CW, CH);
+
+        // 1. Draw the 1080x1350 bike photo
+        drawUnderlyingPhoto(ctx);
+
+        // 2. If < 100%, draw the torn paper cutout mask
+        if (pct < 100) {
+          const gapHeight = (pct / 100) * CH;
+          const weight = pct / 100;
+          const centerY = focusY * (1 - weight) + (CH * 0.5) * weight;
+
+          const topY = Math.max(14, centerY - gapHeight / 2);
+          const bottomY = Math.min(CH - 14, centerY + gapHeight / 2);
+
+          const topTear = generateJaggedTear(topY, 15 + idx * 19, 26);
+          const bottomTear = generateJaggedTear(bottomY, 95 + idx * 29, 26);
+
+          // Inner white fibrous paper pulp rim + realistic shadow onto bike photo
+          ctx.save();
+          ctx.fillStyle = '#dfddd4';
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.55)';
+          ctx.shadowBlur = 20;
+          ctx.shadowOffsetY = 7;
+
+          // Top pulp edge
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.lineTo(CW, 0);
+          for (let i = topTear.length - 1; i >= 0; i--) {
+            const fuzz = (seededRandom(idx * 50 + i) - 0.5) * 6;
+            ctx.lineTo(topTear[i].x, topTear[i].y + 11 + fuzz);
+          }
+          ctx.closePath();
+          ctx.fill();
+
+          // Bottom pulp edge
+          ctx.shadowOffsetY = -7;
+          ctx.beginPath();
+          ctx.moveTo(0, CH);
+          ctx.lineTo(CW, CH);
+          for (let i = bottomTear.length - 1; i >= 0; i--) {
+            const fuzz = (seededRandom(idx * 80 + i) - 0.5) * 6;
+            ctx.lineTo(bottomTear[i].x, bottomTear[i].y - 11 + fuzz);
+          }
+          ctx.closePath();
+          ctx.fill();
+          ctx.restore();
+
+          // Main Top Crumpled Paper Sheet
+          ctx.save();
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.lineTo(CW, 0);
+          for (let i = topTear.length - 1; i >= 0; i--) {
+            ctx.lineTo(topTear[i].x, topTear[i].y);
+          }
+          ctx.closePath();
+          ctx.clip();
+          ctx.drawImage(paperCanvas, 0, 0);
+          ctx.restore();
+
+          // Main Bottom Crumpled Paper Sheet
+          ctx.save();
+          ctx.beginPath();
+          ctx.moveTo(0, CH);
+          ctx.lineTo(CW, CH);
+          for (let i = bottomTear.length - 1; i >= 0; i--) {
+            ctx.lineTo(bottomTear[i].x, bottomTear[i].y);
+          }
+          ctx.closePath();
+          ctx.clip();
+          ctx.drawImage(paperCanvas, 0, 0);
+          ctx.restore();
+
+          // Slide 1 (2% Reveal): Draw "HOLD THE DOTS / AND SCROLL RIGHT" + Arrow
+          if (idx === 0) {
+            drawSlide1HookAndArrow(ctx);
+          }
+        }
+
+        // Convert canvas to Data URL and assign directly to the visible <img> tag
+        const dataUrl = workCanvas.toDataURL('image/png', 1.0);
+        slideDataStore[slideNum] = { dataUrl, pct };
+        const imgEl = document.getElementById(`slide-img-${slideNum}`);
+        if (imgEl) {
+          imgEl.src = dataUrl;
+        }
+      });
+    }
+
+    // Helper: Convert DataURL to Blob for Web Share API & Blob downloading
+    function dataURLtoBlob(dataUrl) {
+      const parts = dataUrl.split(',');
+      const mime = parts[0].match(/:(.*?);/)[1];
+      const bstr = atob(parts[1]);
+      let n = bstr.length;
+      const u8arr = new Uint8Array(n);
+      while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+      }
+      return new Blob([u8arr], { type: mime });
+    }
+
+    // Multi-strategy Save / Share handler that works on Mobile Webviews + Desktop
+    async function saveOrShareSlide(slideNum, pct) {
+      const item = slideDataStore[slideNum];
+      if (!item) return;
+
+      const padded = String(slideNum).padStart(2, '0');
+      const fileName = `Bike_Carousel_Slide_${padded}_${pct}pct.png`;
+      const blob = dataURLtoBlob(item.dataUrl);
+      const file = new File([blob], fileName, { type: 'image/png' });
+
+      // Strategy 1: Native Mobile Share Sheet (Save Image to Photos on iOS/Android)
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({
+            files: [file],
+            title: `Slide ${slideNum} (${pct}%)`,
+            text: `Instagram Carousel Slide ${slideNum}`
+          });
+          showToast(`Shared / Saved Slide ${slideNum}!`);
+          return;
+        } catch (err) {
+          if (err.name === 'AbortError') return;
+          // Fall through to Blob download if share failed
+        }
+      }
+
+      // Strategy 2: Standard Blob Object URL <a download>
+      try {
+        const blobUrl = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = blobUrl;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 4000);
+        showToast(`Saving Slide ${slideNum}... (Or Hold Image to Save)`);
+      } catch (e) {
+        // Strategy 3: Open Fullscreen Modal for Long-Press Save
+        openFullscreenModal(slideNum, pct);
+      }
+    }
+
+    // Open Fullscreen Image Modal so user can easily Long-Press -> Save Image in any restricted app
+    function openFullscreenModal(slideNum, pct) {
+      const item = slideDataStore[slideNum];
+      if (!item) return;
+
+      const modal = document.getElementById('fullscreen-modal');
+      const modalImg = document.getElementById('modal-img');
+      const modalTitle = document.getElementById('modal-title');
+      const shareBtn = document.getElementById('modal-share-btn');
+
+      modalImg.src = item.dataUrl;
+      modalTitle.textContent = `Slide ${slideNum} (${pct}%) — Touch & Hold Image to Save`;
+      shareBtn.onclick = () => saveOrShareSlide(slideNum, pct);
+
+      modal.classList.remove('hidden');
+    }
+
+    function closeFullscreenModal() {
+      document.getElementById('fullscreen-modal').classList.add('hidden');
+    }
+
+    // Batch download all 11 slides
+    function downloadAllSlides() {
+      showToast('Starting download of all 11 slides...');
+      REVEAL_STAGES.forEach((pct, idx) => {
+        setTimeout(() => {
+          const slideNum = idx + 1;
+          const item = slideDataStore[slideNum];
+          if (!item) return;
+          const padded = String(slideNum).padStart(2, '0');
+          const blob = dataURLtoBlob(item.dataUrl);
+          const blobUrl = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = blobUrl;
+          link.download = `Bike_Carousel_Slide_${padded}_${pct}pct.png`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          setTimeout(() => URL.revokeObjectURL(blobUrl), 5000);
+        }, idx * 420);
+      });
+    }
+
+    // Load user's bike photo from device gallery (100% local DataURL — zero CORS issues)
+    document.getElementById('file-upload').addEventListener('change', (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          userPhoto = img;
+          renderAllSlides();
+          showToast('Bike photo loaded! Hold any slide image or tap Save.');
+        };
+        img.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    window.onload = () => {
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => renderAllSlides());
+      } else {
+        renderAllSlides();
+      }
+    };
+  </script>
+</body>
+</html>
